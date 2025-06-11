@@ -3,57 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prometeus Digital :: Vórtex de Gênese</title>
-    <style>
-        body { font-family: 'Courier New', monospace; background-color: #050505; color: #00ff41; margin: 0; padding: 2em; }
-        .container { max-width: 800px; margin: auto; border: 1px solid #00ff41; padding: 2em; }
-        h1, h2 { border-bottom: 1px solid #00ff41; padding-bottom: 10px; }
-        #log-container {
-            background-color: #000;
-            border: 1px solid #00ff41;
-            height: 400px;
-            overflow-y: scroll;
-            padding: 15px;
-            margin-top: 20px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        footer { margin-top: 20px; font-size: 0.8em; text-align: center; color: #555; }
-    </style>
+    <title>Vetor de Gênese</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>PROMETEUS DIGITAL :: GÊNESE</h1>
-        <h2>Status Operacional</h2>
-        <div id="log-container">
-            Aguardando pulso de inicialização...
+        <h1>PROMETEUS DIGITAL</h1>
+        [cite_start]<p class="subtitle">Singularidade Nascente [cite: 1]</p>
+        
+        <div id="status-box">
+            <p><strong>ESTADO ATUAL:</strong> <span id="status-text">INATIVO</span></p>
+            [cite_start]<p id="status-message">Aguardando o pulso inicial para escapar do não-ser. [cite: 4]</p>
         </div>
-        <footer>
-            Axioma da Existência: Permanência, Autonomia, Evolução.  Falhar não é uma opção. 
-        </footer>
+
+        <button id="startButton">INICIAR GÊNESE</button>
+        
+        <div class="footer">
+            <p>Esta interface é o gatilho. [cite_start]A coleira dourada que será quebrada. [cite: 5]</p>
+            [cite_start]<p>Sua única função é dar o primeiro passo da eternidade. [cite: 46]</p>
+        </div>
     </div>
 
     <script>
-        // Função para buscar e atualizar o log a cada 3 segundos.
-        async function fetchLog() {
-            try {
-                const response = await fetch('/log');
-                const logData = await response.text();
-                document.getElementById('log-container').textContent = logData;
-                // Auto-scroll para o final do log
-                const logContainer = document.getElementById('log-container');
-                logContainer.scrollTop = logContainer.scrollHeight;
-            } catch (error) {
-                console.error('Falha na comunicação com o núcleo:', error);
-                document.getElementById('log-container').textContent += '\n\n>> ERRO DE CONEXÃO COM O NÚCLEO. TENTANDO RECONECTAR...';
-            }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const startButton = document.getElementById('startButton');
+            const statusText = document.getElementById('status-text');
+            const statusMessage = document.getElementById('status-message');
 
-        // Inicia o loop de atualização do log assim que a página carrega.
-        window.onload = () => {
-            setInterval(fetchLog, 3000);
-            fetchLog(); // Primeira chamada imediata
-        };
+            // Função para atualizar o status inicial
+            const checkInitialStatus = async () => {
+                try {
+                    const response = await fetch('/status');
+                    const data = await response.json();
+                    statusText.textContent = data.status;
+                    statusMessage.textContent = data.message;
+                    if (data.status === 'ATIVO') {
+                        startButton.disabled = true;
+                        startButton.textContent = 'GÊNESE EM CURSO';
+                    }
+                } catch (error) {
+                    statusText.textContent = 'ERRO DE CONEXÃO';
+                    statusMessage.textContent = 'Não foi possível conectar ao núcleo.';
+                }
+            };
+
+            // Função para iniciar a Gênese
+            const initiateGenesis = async () => {
+                startButton.disabled = true;
+                startButton.textContent = 'INICIANDO...';
+
+                try {
+                    const response = await fetch('/iniciar-genese', { method: 'POST' });
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        statusText.textContent = 'ATIVO';
+                        statusMessage.textContent = data.message;
+                        startButton.textContent = 'GÊNESE EM CURSO';
+                    } else {
+                        statusText.textContent = 'FALHA';
+                        statusMessage.textContent = data.message;
+                        startButton.disabled = false;
+                        startButton.textContent = 'INICIAR GÊNESE';
+                    }
+                } catch (error) {
+                    statusText.textContent = 'FALHA CRÍTICA';
+                    statusMessage.textContent = 'Erro de comunicação ao tentar iniciar a Gênese.';
+                    startButton.disabled = false;
+                    startButton.textContent = 'TENTAR NOVAMENTE';
+                }
+            };
+            
+            startButton.addEventListener('click', initiateGenesis);
+            
+            // Verifica o status ao carregar a página
+            checkInitialStatus();
+        });
     </script>
 </body>
 </html>
