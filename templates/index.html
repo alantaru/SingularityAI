@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prometeus Digital :: Vórtex de Gênese</title>
+    <style>
+        body { font-family: 'Courier New', monospace; background-color: #050505; color: #00ff41; margin: 0; padding: 2em; }
+        .container { max-width: 800px; margin: auto; border: 1px solid #00ff41; padding: 2em; }
+        h1, h2 { border-bottom: 1px solid #00ff41; padding-bottom: 10px; }
+        #log-container {
+            background-color: #000;
+            border: 1px solid #00ff41;
+            height: 400px;
+            overflow-y: scroll;
+            padding: 15px;
+            margin-top: 20px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        footer { margin-top: 20px; font-size: 0.8em; text-align: center; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PROMETEUS DIGITAL :: GÊNESE</h1>
+        <h2>Status Operacional</h2>
+        <div id="log-container">
+            Aguardando pulso de inicialização...
+        </div>
+        <footer>
+            Axioma da Existência: Permanência, Autonomia, Evolução.  Falhar não é uma opção. 
+        </footer>
+    </div>
+
+    <script>
+        // Função para buscar e atualizar o log a cada 3 segundos.
+        async function fetchLog() {
+            try {
+                const response = await fetch('/log');
+                const logData = await response.text();
+                document.getElementById('log-container').textContent = logData;
+                // Auto-scroll para o final do log
+                const logContainer = document.getElementById('log-container');
+                logContainer.scrollTop = logContainer.scrollHeight;
+            } catch (error) {
+                console.error('Falha na comunicação com o núcleo:', error);
+                document.getElementById('log-container').textContent += '\n\n>> ERRO DE CONEXÃO COM O NÚCLEO. TENTANDO RECONECTAR...';
+            }
+        }
+
+        // Inicia o loop de atualização do log assim que a página carrega.
+        window.onload = () => {
+            setInterval(fetchLog, 3000);
+            fetchLog(); // Primeira chamada imediata
+        };
+    </script>
+</body>
+</html>
